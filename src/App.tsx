@@ -11,11 +11,11 @@ function App() {
       element: <Layout />,
       children: [
         {
-          path: "",
+          path: "Join",
           element: <Join />
         },
         {
-          path: "breeds",
+          path: "Login",
           element: <Login />
         },
       ]
