@@ -33,7 +33,7 @@ const Join = () => {
   const onSubmit = async (e: any) => {
     e.preventDefault();
       try {
-        const response = await (await fetch("/api/users/register", {
+        const response = await (await fetch("http://localhost:8080/api/users/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
