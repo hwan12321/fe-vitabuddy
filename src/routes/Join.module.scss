@@ -1,5 +1,15 @@
 @charset "utf-8";
 
+html {
+  background-color: #ffffff;
+}
+
+body {
+  background-color: #f5f3eb;
+  margin-right: 100px;
+  margin-left: 100px;
+}
+
 .form {
   display: flex;
   justify-content: center;
@@ -7,10 +17,20 @@
   flex-direction: column;
   margin-top: 50px;
   margin-bottom: 50px;
+  font-size: 25px;
+  align-items: center;
 
+  h1 {
+    font-size: 40px;
+    text-align: center;
+    font-weight: bold;
+    color: #808000;
+    margin-top: 40px;
+    margin-bottom: 30px;
+  }
   & > div {
     box-sizing: border-box;
-    width: 460px;
+    width: 400px;
   }
 }
 
@@ -109,6 +129,12 @@
 }
 
 .wrapper_password {
+  &::before {
+    background-position: -310px 0;
+  }
+}
+
+.wrapper_confirm_password {
   &::before {
     background-position: -310px 0;
   }
@@ -293,14 +319,15 @@
 }
 
 .btn_submit {
-  width: 460px;
+  width: auto;
+  padding: 0px 80px;
 
   input {
     width: 100%;
     padding: 14px 0;
-    border-radius: 6px;
+    border-radius: 50px;
     border: 1px solid rgba(0, 0, 0, 0.05);
-    background: #81acff;
+    background: #808000;
     font-size: 18px;
     font-weight: 700;
     line-height: 22px;

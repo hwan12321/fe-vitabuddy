@@ -5,8 +5,10 @@ import classnames from "classnames";
 import { useNavigate } from "react-router-dom";
 
 const Join = () => {
+  const [jointitle, setJointitle] = useState<string>("회원가입");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [phone, setPhone] = useState("");
   const [nickname, setNickname] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -18,12 +20,15 @@ const Join = () => {
 
   const [isUsernameValid, setIsUsernameValid] = useState(true);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
+  const [isEmailValid, setIsEmailValid] = useState(true);
 
   const [isUsernameFocus, setIsUsernameFocus] = useState(false);
   const [isPasswordFocus, setIsPasswordFocus] = useState(false);
+  const [isConfirmPasswordFocus, setIsConfirmPasswordFocus] = useState(false);
   const [isNicknameFocus, setIsNicknameFocus] = useState(false);
   const [isPhoneFocus, setIsPhoneFocus] = useState(false);
-
+  const [isEmailFocus, setIsEmailFocus] = useState(false);
   const [isSecretPassword, setIsSecretPassword] = useState(true);
 
   const navigate = useNavigate();
@@ -32,30 +37,29 @@ const Join = () => {
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
-      try {
-        const response = await (await fetch("/api/users/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: username,
-            userName: nickname,
-            userPwd: password,
-            userEmail: "ex@naver.com",
-            userPh: phone,
-            userZipcode: "01",
-            userAddress1: "서울시",
-            userAddress2: "강남구"
-          })
-        }));
+    try {
+      const response = await await fetch("/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: username,
+          userName: nickname,
+          userPwd: password,
+          userEmail: "ex@naver.com",
+          userPh: phone,
+          userZipcode: "01",
+          userAddress1: "서울시",
+          userAddress2: "강남구",
+        }),
+      });
 
-        if(response.status !== 200) {
-          
-        }
-      } catch (err: any) {
-        console.log(err);
+      if (response.status !== 200) {
       }
+    } catch (err: any) {
+      console.log(err);
+    }
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,6 +139,7 @@ const Join = () => {
   return (
     <form onSubmit={onSubmit} className={style.form}>
       <div className={style.input_wrapper}>
+        <h1 className={style.title}>{jointitle}</h1>
         <div
           className={classnames(
             style.wrapper_username,
@@ -185,6 +190,36 @@ const Join = () => {
           </div>
         </div>
         <div
+          className={classnames(
+            style.wrapper_confirm_password,
+            { [style.is_error]: !isConfirmPasswordValid },
+            { [style.is_focus]: isConfirmPasswordFocus }
+          )}
+        >
+          <input
+            onChange={onChange}
+            onFocus={onFocus}
+            name="confirmPassword"
+            type={isSecretPassword ? "password" : "text"}
+            placeholder="비밀번호 재확인"
+            value={confirmPassword}
+            maxLength={20}
+            className={style.input}
+            required
+          />
+          <div className={style.password_info}>
+            <button
+              type="button"
+              className={classnames(style.btn_show, {
+                [style.is_hide]: !isSecretPassword,
+              })}
+              onClick={onClickPasswordShow}
+            >
+              <span className="blind">비밀번호 숨기기</span>
+            </button>
+          </div>
+        </div>
+        <div
           className={classnames(style.wrapper_nickname, {
             [style.is_focus]: isNicknameFocus,
           })}
@@ -216,6 +251,22 @@ const Join = () => {
             value={phone}
           />
         </div>
+        <div
+          className={classnames(style.wrapper_email, {
+            [style.is_focus]: isEmailFocus,
+          })}
+        >
+          <input
+            onChange={onChange}
+            onFocus={onFocus}
+            id="email"
+            name="email"
+            type="email"
+            placeholder="이메일"
+            className={style.input}
+            value={email}
+          />
+        </div>
       </div>
       {requiredMessage !== "" ? (
         <strong className={style.error_text} role="alert">
@@ -227,7 +278,12 @@ const Join = () => {
           {selectedMessage}
         </strong>
       ) : null}
-      <div className={classnames(style.btn_submit, !isUsernameValid || !isPasswordValid && style.is_dimmed)}>
+      <div
+        className={classnames(
+          style.btn_submit,
+          !isUsernameValid || (!isPasswordValid && style.is_dimmed)
+        )}
+      >
         <input type="submit" value={isLoading ? "처리 중 ..." : "회원가입"} />
       </div>
     </form>
