@@ -12,6 +12,9 @@ const Join = () => {
   const [phone, setPhone] = useState("");
   const [nickname, setNickname] = useState<string>("");
   const [email, setEmail] = useState<string>("");
+  const [zipcode, setZipcode] = useState<string>("");
+  const [address1, setAddress1] = useState<string>("");
+  const [address2, setAddress2] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   // 오류메세지, 유효여부 상태 저장
@@ -29,6 +32,9 @@ const Join = () => {
   const [isNicknameFocus, setIsNicknameFocus] = useState(false);
   const [isPhoneFocus, setIsPhoneFocus] = useState(false);
   const [isEmailFocus, setIsEmailFocus] = useState(false);
+  const [isZipcodeFocus, setIsZipcodeFocus] = useState(false);
+  const [isAddress1Focus, setIsAddress1Focus] = useState(false);
+  const [isAddress2Focus, setIsAddress2Focus] = useState(false);
   const [isSecretPassword, setIsSecretPassword] = useState(true);
 
   const navigate = useNavigate();
@@ -47,18 +53,21 @@ const Join = () => {
           userId: username,
           userName: nickname,
           userPwd: password,
-          userEmail: "ex@naver.com",
+          userEmail: email,
           userPh: phone,
-          userZipcode: "01",
-          userAddress1: "서울시",
-          userAddress2: "강남구",
+          userZipcode: zipcode,
+          userAddress1: address1,
+          userAddress2: address2,
         }),
       });
 
       if (response.status !== 200) {
+      } else {
+        setRequiredMessage("회원가입에 실패했습니다. 다시 시도해주세요.");
       }
     } catch (err: any) {
       console.log(err);
+      setRequiredMessage("서버 오류가 발생했습니다. 나중에 다시 시도해주세요.");
     }
   };
 
@@ -96,6 +105,12 @@ const Join = () => {
       setPhone(value);
     } else if (e.target.name === "nickname") {
       setNickname(value);
+    } else if (e.target.name === "zipcode") {
+      setZipcode(value);
+    } else if (e.target.name === "address1") {
+      setAddress1(value);
+    } else if (e.target.name === "address2") {
+      setAddress2(value);
     } else {
       return;
     }
@@ -107,26 +122,66 @@ const Join = () => {
       setIsPasswordFocus(false);
       setIsPhoneFocus(false);
       setIsNicknameFocus(false);
+      setIsZipcodeFocus(false);
+      setIsAddress1Focus(false);
+      setIsAddress2Focus(false);
     } else if (e.target.name === "email") {
+      setIsEmailFocus(true);
       setIsUsernameFocus(false);
       setIsPasswordFocus(false);
       setIsPhoneFocus(false);
       setIsNicknameFocus(false);
+      setIsZipcodeFocus(false);
+      setIsAddress1Focus(false);
+      setIsAddress2Focus(false);
     } else if (e.target.name === "password") {
       setIsPasswordFocus(true);
       setIsUsernameFocus(false);
       setIsPhoneFocus(false);
       setIsNicknameFocus(false);
+      setIsZipcodeFocus(false);
+      setIsAddress1Focus(false);
+      setIsAddress2Focus(false);
     } else if (e.target.name === "phone") {
       setIsPhoneFocus(true);
       setIsUsernameFocus(false);
       setIsPasswordFocus(false);
       setIsNicknameFocus(false);
+      setIsZipcodeFocus(false);
+      setIsAddress1Focus(false);
+      setIsAddress2Focus(false);
     } else if (e.target.name === "nickname") {
       setIsNicknameFocus(true);
       setIsUsernameFocus(false);
       setIsPasswordFocus(false);
       setIsPhoneFocus(false);
+      setIsZipcodeFocus(false);
+      setIsAddress1Focus(false);
+      setIsAddress2Focus(false);
+    } else if (e.target.name === "zipcode") {
+      setIsZipcodeFocus(true);
+      setIsUsernameFocus(false);
+      setIsPasswordFocus(false);
+      setIsNicknameFocus(false);
+      setIsPhoneFocus(false);
+      setIsAddress1Focus(false);
+      setIsAddress2Focus(false);
+    } else if (e.target.name === "address1") {
+      setIsAddress1Focus(true);
+      setIsUsernameFocus(false);
+      setIsPasswordFocus(false);
+      setIsNicknameFocus(false);
+      setIsPhoneFocus(false);
+      setIsZipcodeFocus(false);
+      setIsAddress2Focus(false);
+    } else if (e.target.name === "address2") {
+      setIsAddress2Focus(true);
+      setIsUsernameFocus(false);
+      setIsPasswordFocus(false);
+      setIsNicknameFocus(false);
+      setIsPhoneFocus(false);
+      setIsZipcodeFocus(false);
+      setIsAddress1Focus(false);
     } else {
       return;
     }
@@ -140,90 +195,15 @@ const Join = () => {
     <form onSubmit={onSubmit} className={style.form}>
       <div className={style.input_wrapper}>
         <h1 className={style.title}>{jointitle}</h1>
-        <div
-          className={classnames(
-            style.wrapper_username,
-            { [style.is_error]: !isUsernameValid },
-            { [style.is_focus]: isUsernameFocus }
-          )}
-        >
-          <input
-            onChange={onChange}
-            onFocus={onFocus}
-            name="username"
-            type="text"
-            placeholder="아이디"
-            value={username}
-            className={style.input}
-            maxLength={20}
-            required
-          />
-        </div>
-        <div
-          className={classnames(
-            style.wrapper_password,
-            { [style.is_error]: !isPasswordValid },
-            { [style.is_focus]: isPasswordFocus }
-          )}
-        >
-          <input
-            onChange={onChange}
-            onFocus={onFocus}
-            name="password"
-            type={isSecretPassword ? "password" : "text"}
-            placeholder="비밀번호"
-            value={password}
-            maxLength={20}
-            className={style.input}
-            required
-          />
-          <div className={style.password_info}>
-            <button
-              type="button"
-              className={classnames(style.btn_show, {
-                [style.is_hide]: !isSecretPassword,
-              })}
-              onClick={onClickPasswordShow}
-            >
-              <span className="blind">비밀번호 숨기기</span>
-            </button>
-          </div>
-        </div>
-        <div
-          className={classnames(
-            style.wrapper_confirm_password,
-            { [style.is_error]: !isConfirmPasswordValid },
-            { [style.is_focus]: isConfirmPasswordFocus }
-          )}
-        >
-          <input
-            onChange={onChange}
-            onFocus={onFocus}
-            name="confirmPassword"
-            type={isSecretPassword ? "password" : "text"}
-            placeholder="비밀번호 재확인"
-            value={confirmPassword}
-            maxLength={20}
-            className={style.input}
-            required
-          />
-          <div className={style.password_info}>
-            <button
-              type="button"
-              className={classnames(style.btn_show, {
-                [style.is_hide]: !isSecretPassword,
-              })}
-              onClick={onClickPasswordShow}
-            >
-              <span className="blind">비밀번호 숨기기</span>
-            </button>
-          </div>
-        </div>
+
         <div
           className={classnames(style.wrapper_nickname, {
             [style.is_focus]: isNicknameFocus,
           })}
         >
+          <label htmlFor="nickname" className="{style.label}">
+            이름
+          </label>
           <input
             onChange={onChange}
             onFocus={onFocus}
@@ -236,10 +216,109 @@ const Join = () => {
           />
         </div>
         <div
+          className={classnames(
+            style.wrapper_username,
+            { [style.is_error]: !isUsernameValid },
+            { [style.is_focus]: isUsernameFocus }
+          )}
+        >
+          <label htmlFor="username" className="{style.label}">
+            아이디
+          </label>
+          <input
+            onChange={onChange}
+            onFocus={onFocus}
+            name="username"
+            type="text"
+            placeholder="아이디"
+            value={username}
+            className={style.input}
+            maxLength={20}
+            required
+          />
+        </div>
+
+        <div
+          className={classnames(
+            style.wrapper_password,
+            { [style.is_error]: !isPasswordValid },
+            { [style.is_focus]: isPasswordFocus }
+          )}
+        >
+          <label htmlFor="password" className="{style.label}">
+            비밀번호 설정
+          </label>
+
+          <div className={style.password_info}>
+            <div className={style.password_container}>
+              <input
+                onChange={onChange}
+                onFocus={onFocus}
+                name="password"
+                type={isSecretPassword ? "password" : "text"}
+                placeholder="비밀번호"
+                value={password}
+                maxLength={20}
+                className={style.input}
+                required
+              />
+              <button
+                type="button"
+                className={classnames(style.btn_show, {
+                  [style.is_hide]: !isSecretPassword,
+                })}
+                onClick={onClickPasswordShow}
+              >
+                <span className="blind">비밀번호 숨기기</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className={classnames(
+            style.wrapper_confirm_password,
+            { [style.is_error]: !isConfirmPasswordValid },
+            { [style.is_focus]: isConfirmPasswordFocus }
+          )}
+        >
+          <label htmlFor="confirmPassword" className="{style.label}">
+            비밀번호 확인
+          </label>
+          <div className={style.password_info}>
+            <div className={style.password_container}>
+              <input
+                onChange={onChange}
+                onFocus={onFocus}
+                name="confirmPassword"
+                type={isSecretPassword ? "password" : "text"}
+                placeholder="비밀번호 재확인"
+                value={confirmPassword}
+                maxLength={20}
+                className={style.input}
+                required
+              />
+              <button
+                type="button"
+                className={classnames(style.btn_show, {
+                  [style.is_hide]: !isSecretPassword,
+                })}
+                onClick={onClickPasswordShow}
+              >
+                <span className="blind">비밀번호 숨기기</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
           className={classnames(style.wrapper_phone, {
             [style.is_focus]: isPhoneFocus,
           })}
         >
+          <label htmlFor="phone" className="{style.label}">
+            전화번호
+          </label>
           <input
             onChange={onChange}
             onFocus={onFocus}
@@ -256,15 +335,75 @@ const Join = () => {
             [style.is_focus]: isEmailFocus,
           })}
         >
+          <label htmlFor="email" className="{style.label}">
+            이메일
+          </label>
           <input
             onChange={onChange}
             onFocus={onFocus}
             id="email"
             name="email"
-            type="email"
+            type="text"
             placeholder="이메일"
             className={style.input}
             value={email}
+          />
+        </div>
+        <div
+          className={classnames(style.wrapper_zipcode, {
+            [style.is_focus]: isZipcodeFocus,
+          })}
+        >
+          <label htmlFor="zipcode" className="{style.label}">
+            우편번호
+          </label>
+          <input
+            onChange={onChange}
+            onFocus={onFocus}
+            id="zipcode"
+            name="zipcode"
+            type="text"
+            placeholder="우편번호"
+            className={style.input}
+            value={zipcode}
+          />
+        </div>
+        <div
+          className={classnames(style.wrapper_address1, {
+            [style.is_focus]: isAddress1Focus,
+          })}
+        >
+          <label htmlFor="address1" className="{style.label}">
+            주소
+          </label>
+          <input
+            onChange={onChange}
+            onFocus={onFocus}
+            id="address1"
+            name="address1"
+            type="text"
+            placeholder="주소"
+            className={style.input}
+            value={address1}
+          />
+        </div>
+        <div
+          className={classnames(style.wrapper_address2, {
+            [style.is_focus]: isAddress2Focus,
+          })}
+        >
+          <label htmlFor="address2" className="{style.label}">
+            상세 주소
+          </label>
+          <input
+            onChange={onChange}
+            onFocus={onFocus}
+            id="address2"
+            name="address2"
+            type="text"
+            placeholder="상세 주소"
+            className={style.input}
+            value={address2}
           />
         </div>
       </div>
