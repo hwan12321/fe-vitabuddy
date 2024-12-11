@@ -16,7 +16,7 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin: 50px 0;
+  margin: 20px 0;
   font-size: 25px;
 
   h1 {
@@ -36,9 +36,10 @@ label {
   font-size: 16px;
   font-weight: bold;
   display: block;
-  width: 100%;
+  width: 350px;
   box-sizing: border-box;
-  margin-right: 10px;
+  margin-right: 20px;
+  white-space: nowrap;
 }
 
 .wrapper_nickname,
@@ -46,7 +47,6 @@ label {
 .wrapper_password,
 .wrapper_confirm_password,
 .wrapper_email,
-.wrapper_confirmEmail,
 .wrapper_phone,
 .wrapper_zipcode,
 .wrapper_address1,
@@ -54,7 +54,22 @@ label {
   font-size: 14px;
   font-weight: bold;
   color: #808000;
-  margin: 8px 20px 8px 0;
+  margin: 3px 20px 3px 0;
+  display: flex;
+  align-items: center;
+  width: 350px;
+}
+
+.wrapper_password,
+.wrapper_confirm_password {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wrapper_password label,
+.wrapper_confirm_password label {
+  width: 350px;
 }
 
 .input {
@@ -62,29 +77,45 @@ label {
   border: none;
   border-radius: 5px;
   font-size: 15px;
-  line-height: 22px;
   height: 40px;
+  width: 100%;
   color: #222;
   box-sizing: border-box;
+  min-width: 250px;
+  padding-left: 5px;
+  flex-grow: 1;
 }
 
 .password_container {
   position: relative;
+  width: 100%;
   display: flex;
   align-items: center;
+}
 
-  .input {
-    width: 100%;
-    padding-right: 40px; /* 버튼이 겹치지 않도록 오른쪽 여백 추가 */
-  }
+.passwordlabel {
+  font-size: 16px;
+  font-weight: bold;
+  display: block;
+  width: 350px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
 
-  .btn_show {
-    position: absolute;
-    right: 10px; /* 입력 필드의 오른쪽 끝에 배치 */
-    background: transparent;
-    border: none;
-    cursor: pointer;
-  }
+.password_container input {
+  width: calc(100% - 30px);
+  padding-right: 2rem;
+  box-sizing: border-box;
+}
+
+.btn_show {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 [class*="Join_wrapper"] {
@@ -198,7 +229,48 @@ label {
   }
 }
 
-.profile_img {
-  width: 100%;
-  border-radius: inherit;
+.input_with_button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.idbtn_check {
+  padding: 8px 12px;
+  background-color: #808000;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.idbtn_check:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.input_zipostbtn {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 버튼과 입력 필드 사이의 간격을 설정 */
+}
+
+.postbtn_check {
+  padding: 8px 12px;
+  background-color: #808000;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.postbtn_check:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
