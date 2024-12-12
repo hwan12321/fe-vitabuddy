@@ -3,7 +3,6 @@ import './global.scss';
 import Join from './routes/Join';
 import Login from './routes/Login';
 import Layout from './routes/Layout';
-import Auth from './routes/Auth';
 
 function App() {
   const router = createBrowserRouter([
@@ -18,10 +17,6 @@ function App() {
         {
           path: "Login",
           element: <Login />
-        },
-        {
-          path: "Auth",
-          element: <Auth />
         },
       ]
     }

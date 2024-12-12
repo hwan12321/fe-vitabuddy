@@ -1,8 +1,8 @@
-import axios from "axios";
 import React, { useState } from "react";
 import style from "./Join.module.scss";
 import classnames from "classnames";
 import { useNavigate } from "react-router-dom";
+import emailjs from "emailjs-com";
 
 const Join = () => {
   const [jointitle, setJointitle] = useState<string>("회원가입");
@@ -16,6 +16,8 @@ const Join = () => {
   const [address1, setAddress1] = useState<string>("");
   const [address2, setAddress2] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
 
   // 오류메세지, 유효여부 상태 저장
   const [requiredMessage, setRequiredMessage] = useState("");
@@ -37,9 +39,31 @@ const Join = () => {
   const [isAddress2Focus, setIsAddress2Focus] = useState(false);
   const [isSecretPassword, setIsSecretPassword] = useState(true);
 
+  const EMAIL_API_KEY = "KGZrbSZ7tBtuPO4Ql";
+
   const navigate = useNavigate();
 
   // console.log("location", location);
+
+  const handleEmailVerification = async () => {
+    const templateParams = {
+      to_email: email,
+      from_name : "vitabuddy",
+      code: "22"
+    };
+
+    try {
+      await emailjs.send(
+        'vitabuddy',
+        'vitabuddy',
+        templateParams,
+        EMAIL_API_KEY,
+      );
+      setIsEmailSent(true);
+    } catch(e) {
+      console.log(e);
+    }
+  }
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
@@ -348,6 +372,7 @@ const Join = () => {
             className={style.input}
             value={email}
           />
+          {isEmailSent ? "이메일 인증이 성공적으로 발송되었습니다!" : <button type="button" onClick={handleEmailVerification}>이메일 인증</button>}
         </div>
         <div
           className={classnames(style.wrapper_zipcode, {

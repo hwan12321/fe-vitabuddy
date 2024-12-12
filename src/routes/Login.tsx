@@ -4,20 +4,23 @@ import style from "./Login.module.scss";
 const KAKAO_REST_API_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
 const NAVER_REST_API_KEY = process.env.REACT_APP_NAVER_REST_API_KEY;
 const GOOGLE_REST_API_KEY = process.env.REACT_APP_GOOGLE_REST_API_KEY;
-const REDIRECT_URI = `http://localhost:3000/auth`;
+const NAVER_REDIRECT_URI = `http://localhost:8080/member/socialLogin/naver`;
+const KAKAO_REDIRECT_URI = `http://localhost:8080/member/socialLogin/kakao`;
+const GOOGLE_REDIRECT_URI = `http://localhost:8080/member/socialLogin/google`;
+
 
 const Login = () => {
 
     const onClickKakaoLogin = () => {
-        window.location.href= `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+        window.location.href= `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_REST_API_KEY}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
     }
 
     const onClickNaverLogin = () => {
-        window.location.href= `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_REST_API_KEY}&state=flase&redirect_uri=${REDIRECT_URI}`;
+        window.location.href= `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_REST_API_KEY}&state=flase&redirect_uri=${NAVER_REDIRECT_URI}`;
     }
 
     const onClickGoogleLogin = () => {
-        window.location.href= `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=email+profile`;
+        window.location.href= `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_REST_API_KEY}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email+profile`;
     }
 
     return (
@@ -54,7 +57,7 @@ const Login = () => {
             <section>
                 <div>
                     <p>아직 회원이 아니신가요?</p>
-                    <a href="/member/register" className="btn btnFilled">
+                    <a href="/join" className="btn btnFilled">
                         회원가입
                     </a>
                 </div>
