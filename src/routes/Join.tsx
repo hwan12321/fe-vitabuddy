@@ -4,6 +4,7 @@ import style from "./Join.module.scss";
 import classnames from "classnames";
 import { useNavigate } from "react-router-dom";
 import DaumPostcode from "react-daum-postcode";
+import { toast, ToastContainer } from "react-toastify";
 
 const Join = () => {
   const [jointitle, setJointitle] = useState<string>("회원가입");
@@ -66,7 +67,7 @@ const Join = () => {
 
     setZipcode(data.zonecode);
     setAddress1(fullAddress);
-    setPopup(false);
+    setPopup(false); // 주소를 선택하면 팝업 닫기
   };
 
   const togglePopup = () => {
@@ -126,7 +127,7 @@ const Join = () => {
       setPassword(value);
       const passwordRegExp =
         /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/;
-      if (!passwordRegExp.test(password)) {
+      if (!passwordRegExp.test(value)) {
         setRequiredMessage(
           "비밀번호: 숫자+영문자+특수문자 조합으로 8자리 이상 25자리 이하로 입력해주세요."
         );
@@ -135,6 +136,15 @@ const Join = () => {
       } else {
         setRequiredMessage("");
         setIsPasswordValid(true);
+      }
+    } else if (e.target.name === "confirmPassword") {
+      setConfirmPassword(value);
+      if (value !== password) {
+        setRequiredMessage("비밀번호가 다릅니다.");
+        setIsConfirmPasswordValid(false);
+      } else {
+        setRequiredMessage("");
+        setIsConfirmPasswordValid(true);
       }
     } else if (e.target.name === "email") {
       setEmail(value);
@@ -322,7 +332,7 @@ const Join = () => {
             { [style.is_focus]: isPasswordFocus }
           )}
         >
-          <label htmlFor="password" className="{style.passwordlabel}">
+          <label htmlFor="password" className="{style.label}">
             비밀번호 설정
           </label>
 
@@ -359,7 +369,7 @@ const Join = () => {
             { [style.is_focus]: isConfirmPasswordFocus }
           )}
         >
-          <label htmlFor="confirmPassword" className="{style.passwordlabel}">
+          <label htmlFor="confirmPassword" className="{style.label}">
             비밀번호 확인
           </label>
           <div className={style.password_info}>
@@ -407,6 +417,7 @@ const Join = () => {
             value={phone}
           />
         </div>
+
         <div
           className={classnames(style.wrapper_email, {
             [style.is_focus]: isEmailFocus,
@@ -415,7 +426,7 @@ const Join = () => {
           <label htmlFor="email" className="{style.label}">
             이메일
           </label>
-          <div className={style.input_email}>
+          <div className={style.input_emailleft}>
             <input
               onChange={(e) => setEmailLeft(e.target.value)}
               onFocus={() => setIsDropdownOpen(true)}
@@ -426,34 +437,31 @@ const Join = () => {
               className={style.input_left}
               value={emailLeft}
             />
+
             <span className={style.at_sign}>@</span>
-            <div className={style.input_right_container}>
-              <input
-                onFocus={() => setIsDropdownOpen(true)}
-                onChange={(e) => setEmailRight(e.target.value)}
+
+            <div className={style.input_emailright}>
+              <select
                 id="emailRight"
                 name="emailRight"
-                type="text"
-                placeholder="이메일 도메인"
-                className={style.input_right}
+                className={style.select}
                 value={emailRight}
-              />
-              {isDropdownOpen && (
-                <ul className={style.domain_dropdown}>
-                  {domains.map((domain) => (
-                    <li
-                      key={domain}
-                      className={style.domain_item}
-                      onClick={() => handleDomainSelect(domain)}
-                    >
-                      {domain}
-                    </li>
-                  ))}
-                </ul>
-              )}
+                onChange={(e) => setEmailRight(e.target.value)}
+                onFocus={() => setIsDropdownOpen(true)}
+              >
+                <option value="" disabled>
+                  선택
+                </option>
+                {domains.map((domain) => (
+                  <option key={domain} value={domain}>
+                    {domain}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
+
         <div
           className={classnames(style.wrapper_zipcode, {
             [style.is_focus]: isZipcodeFocus,
@@ -483,6 +491,20 @@ const Join = () => {
             </button>
           </div>
         </div>
+
+        {popup && (
+          <div className={style.modal_overlay}>
+            <div className={style.modal_content}>
+              <img
+                className={style.modal_close}
+                src="//t1.daumcdn.net/postcode/resource/images/close.png"
+                alt="닫기 버튼"
+                onClick={togglePopup}
+              />
+              <DaumPostcode onComplete={handleComplete} />
+            </div>
+          </div>
+        )}
         <div
           className={classnames(style.wrapper_address1, {
             [style.is_focus]: isAddress1Focus,
@@ -503,19 +525,6 @@ const Join = () => {
             readOnly
           />
         </div>
-
-        {popup && (
-          <div className={style.popup}>
-            <DaumPostcode onComplete={handleComplete} />{" "}
-            <button
-              type="button"
-              onClick={togglePopup}
-              className={style.popup_close}
-            >
-              닫기
-            </button>
-          </div>
-        )}
 
         <div
           className={classnames(style.wrapper_address2, {
