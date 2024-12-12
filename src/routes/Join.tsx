@@ -3,6 +3,7 @@ import style from "./Join.module.scss";
 import classnames from "classnames";
 import { useNavigate } from "react-router-dom";
 import emailjs from "emailjs-com";
+import DaumPostcode from "react-daum-postcode";
 
 const Join = () => {
   const [jointitle, setJointitle] = useState<string>("회원가입");
@@ -16,6 +17,9 @@ const Join = () => {
   const [address1, setAddress1] = useState<string>("");
   const [address2, setAddress2] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [popup, setPopup] = useState(false);
+  const [emailLeft, setEmailLeft] = useState<string>("");
+  const [emailRight, setEmailRight] = useState<string>("");
 
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
 
@@ -40,6 +44,8 @@ const Join = () => {
   const [isSecretPassword, setIsSecretPassword] = useState(true);
 
   const EMAIL_API_KEY = "KGZrbSZ7tBtuPO4Ql";
+  const domains = ["naver.com", "gmail.com", "daum.net"];
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -64,6 +70,35 @@ const Join = () => {
       console.log(e);
     }
   }
+  // 우편번호 검색 팝업 수정
+  const handleComplete = (data: any) => {
+    let fullAddress = data.address;
+    let extraAddress = "";
+
+    if (data.addressType === "R") {
+      if (data.bname !== "") {
+        extraAddress += data.bname;
+      }
+      if (data.buildingName !== "") {
+        extraAddress +=
+          extraAddress !== "" ? `, ${data.buildingName}` : data.buildingName;
+      }
+      fullAddress += extraAddress !== "" ? ` (${extraAddress})` : "";
+    }
+
+    setZipcode(data.zonecode);
+    setAddress1(fullAddress);
+    setPopup(false);
+  };
+
+  const togglePopup = () => {
+    setPopup(!popup);
+  };
+
+  const handleDomainSelect = (domain: string) => {
+    setEmailRight(domain);
+    setIsDropdownOpen(false);
+  };
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
@@ -137,6 +172,38 @@ const Join = () => {
       setAddress2(value);
     } else {
       return;
+    }
+  };
+
+  const onCheckUsername = async () => {
+    if (!username.trim()) {
+      alert("아이디를 입력해주세요.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/check-username", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.isAvailable) {
+          alert("사용 가능한 아이디입니다.");
+        } else {
+          alert("이미 사용 중인 아이디입니다.");
+        }
+      } else {
+        alert("아이디 확인 중 문제가 발생했습니다. 다시 시도해주세요.");
+      }
+    } catch (error) {
+      console.error("Error checking username:", error);
+      alert("서버와 연결할 수 없습니다.");
     }
   };
 
@@ -249,19 +316,27 @@ const Join = () => {
           <label htmlFor="username" className="{style.label}">
             아이디
           </label>
-          <input
-            onChange={onChange}
-            onFocus={onFocus}
-            name="username"
-            type="text"
-            placeholder="아이디"
-            value={username}
-            className={style.input}
-            maxLength={20}
-            required
-          />
+          <div className={style.input_with_button}>
+            <input
+              onChange={onChange}
+              onFocus={onFocus}
+              name="username"
+              type="text"
+              placeholder="아이디"
+              value={username}
+              className={style.input}
+              maxLength={20}
+              required
+            />
+            <button
+              type="button"
+              className={style.idbtn_check}
+              onClick={onCheckUsername}
+            >
+              중복확인
+            </button>
+          </div>
         </div>
-
         <div
           className={classnames(
             style.wrapper_password,
@@ -269,7 +344,7 @@ const Join = () => {
             { [style.is_focus]: isPasswordFocus }
           )}
         >
-          <label htmlFor="password" className="{style.label}">
+          <label htmlFor="password" className="{style.passwordlabel}">
             비밀번호 설정
           </label>
 
@@ -306,7 +381,7 @@ const Join = () => {
             { [style.is_focus]: isConfirmPasswordFocus }
           )}
         >
-          <label htmlFor="confirmPassword" className="{style.label}">
+          <label htmlFor="confirmPassword" className="{style.passwordlabel}">
             비밀번호 확인
           </label>
           <div className={style.password_info}>
@@ -362,17 +437,45 @@ const Join = () => {
           <label htmlFor="email" className="{style.label}">
             이메일
           </label>
-          <input
-            onChange={onChange}
-            onFocus={onFocus}
-            id="email"
-            name="email"
-            type="text"
-            placeholder="이메일"
-            className={style.input}
-            value={email}
-          />
-          {isEmailSent ? "이메일 인증이 성공적으로 발송되었습니다!" : <button type="button" onClick={handleEmailVerification}>이메일 인증</button>}
+          <div className={style.input_email}>
+            <input
+              onChange={(e) => setEmailLeft(e.target.value)}
+              onFocus={() => setIsDropdownOpen(true)}
+              id="emailLeft"
+              name="emailLeft"
+              type="text"
+              placeholder="이메일"
+              className={style.input_left}
+              value={emailLeft}
+            />
+            <span className={style.at_sign}>@</span>
+            <div className={style.input_right_container}>
+              <input
+                onFocus={() => setIsDropdownOpen(true)}
+                onChange={(e) => setEmailRight(e.target.value)}
+                id="emailRight"
+                name="emailRight"
+                type="text"
+                placeholder="이메일 도메인"
+                className={style.input_right}
+                value={emailRight}
+              />
+              {isDropdownOpen && (
+                <ul className={style.domain_dropdown}>
+                  {domains.map((domain) => (
+                    <li
+                      key={domain}
+                      className={style.domain_item}
+                      onClick={() => handleDomainSelect(domain)}
+                    >
+                      {domain}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            {isEmailSent ? "이메일 인증이 성공적으로 발송되었습니다!" : <button type="button" onClick={handleEmailVerification}>이메일 인증</button>}
+          </div>
         </div>
         <div
           className={classnames(style.wrapper_zipcode, {
@@ -382,16 +485,26 @@ const Join = () => {
           <label htmlFor="zipcode" className="{style.label}">
             우편번호
           </label>
-          <input
-            onChange={onChange}
-            onFocus={onFocus}
-            id="zipcode"
-            name="zipcode"
-            type="text"
-            placeholder="우편번호"
-            className={style.input}
-            value={zipcode}
-          />
+          <div className={style.input_zipostbtn}>
+            <input
+              onChange={onChange}
+              onFocus={onFocus}
+              id="zipcode"
+              name="zipcode"
+              type="text"
+              placeholder="우편번호"
+              className={style.input}
+              value={zipcode}
+              readOnly
+            />
+            <button
+              type="button"
+              className={style.postbtn_check}
+              onClick={togglePopup}
+            >
+              우편번호 찾기
+            </button>
+          </div>
         </div>
         <div
           className={classnames(style.wrapper_address1, {
@@ -410,8 +523,23 @@ const Join = () => {
             placeholder="주소"
             className={style.input}
             value={address1}
+            readOnly
           />
         </div>
+
+        {popup && (
+          <div className={style.popup}>
+            <DaumPostcode onComplete={handleComplete} />{" "}
+            <button
+              type="button"
+              onClick={togglePopup}
+              className={style.popup_close}
+            >
+              닫기
+            </button>
+          </div>
+        )}
+
         <div
           className={classnames(style.wrapper_address2, {
             [style.is_focus]: isAddress2Focus,
